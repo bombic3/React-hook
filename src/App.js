@@ -1,10 +1,10 @@
 import React from 'react';
-import InfoReducer from './InfoReducer';
+import Average from './Average';
 
 const App = () => {
   return (
     <div>
-      <InfoReducer />
+      <Average />
     </div>
   );
 };
