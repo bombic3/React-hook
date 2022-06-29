@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+
+// 등록button을 누르지 않아도 input 안에서 내용이 수정될 때 getAverage 함수 호출됨
 
 const getAverage = numbers => {
   console.log('평균값 계산 중..');
@@ -15,11 +17,17 @@ const Average = () => {
     setNumber(e.target.value);
   };
   // concat → 새로운 배열 생성 후 이를 새로운 상태로 설정
-  const onInsert = e => {
+  const onInsert = () => {
     const nextList = list.concat(parseInt(number));
     setList(nextList);
     setNumber('');
   };
+
+  // useMemo사용
+	// list 배열의 내용이 바뀔 때만 getAverage 함수 호출
+	// 렌더링 과정에서 특정 값이 바뀌었을 때만 연산 실행
+  // 원하는 값이 바뀌지 않았다면 이전에 연산했던 결과를 다시 사용
+  const avg = useMemo(() => getAverage(list), [list]);
 
   // -------map()함수 복습---------
   // arr.map(callback, [ thisArg ]) : 기존 배열로 새로운 배열을 만듦
@@ -37,7 +45,8 @@ const Average = () => {
         ))}
       </ul>
       <div>
-        <b>평균값:</b>{getAverage(list)}
+        {/* <b>평균값:</b>{getAverage(list)} */}
+        <b>평균값:</b>{avg}
       </div>
     </div>
   );
