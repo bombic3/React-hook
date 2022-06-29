@@ -1,11 +1,11 @@
 import React from 'react';
-import AverageUseCallback from './AverageUseCallback';
+import AverageUseRef from './AverageUseRef';
 
 
 const App = () => {
   return (
     <div>
-      <AverageUseCallback />
+      <AverageUseRef />
     </div>
   );
 };
