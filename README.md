@@ -995,3 +995,236 @@ export default App;
 ---
 
 ## 8.6 useRef
+
+- 함수 컴포넌트에서 ref 쉽게 사용할 수 있게 함
+- useRef 사용하여 ref 설정하면 useRef 를 통해 만든 객체 안의 current 값이 실제 엘리먼트를 가리킴 —> ❓❓❓❓
+
+### 등록 button 눌렀을 때 포커스 input으로 넘어가도록 코드 작성
+
+AverageUseRef.js
+
+```jsx
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+
+const getAverage = numbers => {
+  console.log('평균값 계산 중..');
+  if (numbers.length === 0) return 0;
+  const sum = numbers.reduce((a, b) => a + b);
+  return sum / numbers.length;
+};
+
+const AverageUseRef = () => {
+  const [list, setList] = useState([]);
+  const [number, setNumber] = useState('');
+  **// useRef
+  // - 함수 컴포넌트에서 ref 쉽게 사용할 수 있게 함
+  // - 등록 button 눌렀을 때 포커스 input으로 넘어가도록 코드 작성
+  // - useRef 사용하여 ref 설정하면 useRef 를 통해 만든 객체 안의
+  //    current 값이 실제 엘리먼트를 가리킴
+  const inputEl = useRef(null);**
+
+  const onChange = useCallback(e => {
+    setNumber(e.target.value);
+  }, []);
+
+  const onInsert = useCallback(() => {
+    const nextList = list.concat(parseInt(number));
+    setList(nextList);
+    setNumber('');
+    **inputEl.current.focus();**
+  }, [number, list]);
+
+  const avg = useMemo(() => getAverage(list), [list]);
+
+  return (
+    <div>
+      <input value={number} onChange={onChange} **ref={inputEl}** />
+      <button onClick={onInsert}>등록</button>
+      <ul>
+        {list.map((value, index) => (
+          <li key={index}>{ value}</li>
+        ))}
+      </ul>
+      <div>
+        <b>평균값:</b>{avg}
+      </div>
+    </div>
+  );
+};
+
+export default AverageUseRef;
+```
+
+App.js
+
+```jsx
+import React from "react";
+import AverageUseRef from "./AverageUseRef";
+
+const App = () => {
+  return (
+    <div>
+      <AverageUseRef />
+    </div>
+  );
+};
+
+export default App;
+```
+
+---
+
+### 8.6.1 로컬 변수 사용하기
+
+- 로컬 변수 : 렌더링과 상관없이 바뀔 수 있는 값
+- 로컬 변수를 사용할 때도 useRef 사용
+- 이렇게 ref 안의 값이 바뀌어도 컴포넌트가 렌더링되지 않는다는 점 주의
+- 렌더링과 관련되지 않은 값을 관리할 때만 이런 방식으로 작성하기
+
+```jsx
+import React, { useRef } from "react";
+// useRef 사용하여 로컬 변수 사용하기
+// - 로컬 변수 : 렌더링과 상관없이 바뀔 수 있는 값
+// - 로컬 변수를 사용할 때도 useRef 사용
+
+// - 이렇게 ref 안의 값이 바뀌어도 컴포넌트가 렌더링되지 않는다는 점 주의
+// - 렌더링과 관련되지 않은 값을 관리할 때만 이런 방식으로 작성하기
+const useRefEx = () => {
+  const id = useRef(1);
+  const setId = (n) => {
+    id.current = n;
+  };
+  const printId = () => {
+    console.log(id.current);
+  };
+  return <div>useRefExample 이다.</div>;
+};
+
+export default useRefEx;
+
+// 클래스 컴포넌트
+// import React, { Component } from 'react';
+
+// class useRefEx extends Component {
+//   id = 1
+//   setId = (n) => {
+//     this.id = n;
+//   }
+//   printId = () => {
+//     console.log(this.id);
+//   }
+//   render() {
+//     return (
+//       <div>
+//         useRefExample
+//       </div>
+//     );
+//   }
+// }
+
+// export default useRefEx;
+```
+
+---
+
+---
+
+## 8.7 커스텀 Hooks 만들기
+
+- 여러 컴포넌트에서 비슷한 기능을 공유할 경우, 나만의 Hook으로 작성하여 로직 재사용 가능
+- 기존 Info 컴포넌트에서 여러개의 인풋 관리 useReducer → useInputs 로 다시 작성해보기
+
+useInputs.js
+
+```jsx
+import { useReducer } from "react";
+
+function reducer(state, action) {
+  return {
+    ...state,
+    [action.name]: action.value,
+  };
+}
+
+export default function useInputs(initialForm) {
+  const [state, dispatch] = useReducer(reducer, initialForm);
+  const onChange = (e) => {
+    dispatch(e.target);
+  };
+  return [state, onChange];
+}
+```
+
+InfoUseInput.js
+
+```jsx
+import React from "react";
+import useInputs from "./useInputs";
+
+const InfoUseInput = () => {
+  const [state, onChange] = useInputs({
+    name: "",
+    nickname: "",
+  });
+  const { name, nickname } = state;
+
+  return (
+    <div>
+      <div>
+        <input name="name" value={name} onChange={onChange} />
+        <input name="nickname" value={nickname} onChange={onChange} />
+      </div>
+      <div>
+        <div>
+          <b>이름:</b> {name}
+        </div>
+        <div>
+          <b>닉네임:</b> {nickname}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default InfoUseInput;
+```
+
+App.js
+
+```jsx
+import React from "react";
+import InfoUseInput from "./InfoUseInput";
+
+const App = () => {
+  return (
+    <div>
+      <InfoUseInput />
+    </div>
+  );
+};
+
+export default App;
+```
+
+---
+
+## 8.8 다른 Hooks
+
+- 커스텀 Hooks만들어 사용했던 것처럼, 다른 개발자가 만든 Hooks도 라이브러리로 설치하여 사용할 수 있음
+-
+
+[Collection of React Hooks](https://nikgraf.github.io/react-hooks/)
+
+- https://github.com/rehooks/awesome-react-hooks
+
+---
+
+## 8.9 Hooks 정리
+
+- 리액트에서 Hooks 패턴 사용하면 클래스형 컴포넌트 작성하지 않고 대부분의 기능 구현 가능
+- 이러한 기능이 리액트에 릴리즈되었다고 해서 기존의 setState를 사용하는 방식이 잘못된 것은 아님(useState 혹은 useReducer를 통해 구현할 수 있더라도)
+- 리액트 메뉴얼에 따르면, 클래스형 컴포넌트 계속 지원예정
+- 유지 보수하고 있는 클래스형 컴포넌트를 굳이 함수 컴포넌트와 Hooks를 사용하는 형태로 전환할 필요 없음
+- 다만 새로 작성하는 컴포넌트(새로운 프로젝트 개발)는 함수 컴포넌트 사용(Hooks 사용 권장), 꼭 필요한 상황에서만 클래스형 컴포넌트 사용
+
+---
