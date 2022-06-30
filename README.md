@@ -1228,3 +1228,89 @@ export default App;
 - 다만 새로 작성하는 컴포넌트(새로운 프로젝트 개발)는 함수 컴포넌트 사용(Hooks 사용 권장), 꼭 필요한 상황에서만 클래스형 컴포넌트 사용
 
 ---
+
+---
+
+# 🖥 패스트 캠퍼스 강의
+
+# Ch 7. Hooks & Context
+
+## 클래스 컴포넌트 대신 함수 컴포넌트 쓰는 이유
+
+- 컴포넌트 사이에서 상태와 관련된 로직을 재사용하기 어렵다
+  - 컨테이너 방식 말고, 상태와 관련된 로직
+- 복잡한 컴포넌트들은 이해하기 어렵다.
+- Class는 사람과 기계를 혼동 시킨다
+  - 컴파일 단계에서 코드를 최적화하기 어렵게 만든다.
+- this.state 는 로직에서 레퍼런스를 공유하기 때문에 문제가 발생할 수 있다.
+
+## 01. Basic Hooks(1)
+
+```jsx
+npx create-react-app 폴더명
+npx create-react-app react-hooks-example
+```
+
+## 02. Basic Hooks(2) - 강의참고
+
+### useState - state 대체
+
+### useEffect - 라이프사이클 대체
+
+- componentDidMount
+- componentDidUpdate → useEffect(업데이트 후 값으로 실행)
+- componentWillUnmount → cleanup(업데이트 전 값으로 실행)
+
+---
+
+## 03. Custom Hooks(커스텀 훅 - 훅 커스텀하기)
+
+- 나만의 Hook 만들어 코드 짧고 간결하게
+
+useWindowWidth.js
+
+```jsx
+import React, { useEffect } from "react";
+
+export default function useWindowWidth() {
+  const [width, setWidth] = React.useState(window.innerWidth);
+
+  // 새로고침이 아닌 사이즈 조정시 바로바로 setWidth 값 가져오기
+  useEffect(() => {
+    const resize = () => {
+      setWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", resize);
+
+    // cleanup 함수 써주기(업데이트 되기전 값으로 렌더링, [] => 최초에만 실행)
+    return () => {
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return width;
+}
+```
+
+App.js
+
+```jsx
+import logo from "./logo.svg";
+import "./App.css";
+import useWindowWidth from "./useWindowWidth";
+
+function App() {
+  const width = useWindowWidth();
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        **{width}**
+      </header>
+    </div>
+  );
+}
+
+export default App;
+```

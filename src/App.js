@@ -1,12 +1,18 @@
-import React from 'react';
-import InfoUseInput from './InfoUseInput';
+import logo from './logo.svg';
+import './App.css';
+import useWindowWidth from './useWindowWidth';
 
-const App = () => {
+function App () {
+  const width = useWindowWidth();
   return (
-    <div>
-      <InfoUseInput />
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+      
+        {width}
+      </header>
     </div>
   );
-};
+}
 
 export default App;
