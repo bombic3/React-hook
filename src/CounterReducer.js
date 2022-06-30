@@ -19,7 +19,7 @@ const CounterReducer = () => {
   // 두 번째 파라미터에 해당 리듀서의 기본값 넣기
   const [state, dispatch] = useReducer(reducer, { value: 0 });
 
-  // state 값과 dispatch 함수를 받아 오는데요. 여기서 state는 현재 가리키고 있는 상태,
+  // state 값과 dispatch 함수를 받아 오는데 여기서 state는 현재 가리키고 있는 상태,
   // dispatch 는 액션을 발생시키는 함수이다.
   // dispatch(action)과 같은 형태로, 함수 안에 파라미터로 액션 값을 넣어주면 리듀서 함수가 호출됨
   return (

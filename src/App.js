@@ -1,11 +1,10 @@
 import React from 'react';
-import AverageUseRef from './AverageUseRef';
-
+import InfoUseInput from './InfoUseInput';
 
 const App = () => {
   return (
     <div>
-      <AverageUseRef />
+      <InfoUseInput />
     </div>
   );
 };
